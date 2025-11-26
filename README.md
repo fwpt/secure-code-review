@@ -8,13 +8,13 @@ These code review exercises were created to practice and demonstrate security co
 
 ## Contents
 
-- SQL Injection in Rails controller
-- Broken Access Control (IDOR) in user profile update
-- Sensitive Data Exposure (password logging) in authentication
-- Path Traversal vulnerability in file handling
-- Race Condition (TOCTOU) and CSRF in financial transaction API
-- Command Injection (RCE) and JWT vulnerabilities in Node.js/Express
-- Container security issues (secrets, root user, SSH exposure)
+- [SQL Injection in Rails controller](https://github.com/fwpt/secure-code-review?tab=readme-ov-file#sql-injection-in-rails-controller)
+- [Broken Access Control (IDOR) in user profile update](https://github.com/fwpt/secure-code-review?tab=readme-ov-file#broken-access-control-idor-in-user-profile-update)
+- [Sensitive Data Exposure (password logging) in authentication](https://github.com/fwpt/secure-code-review?tab=readme-ov-file#sensitive-data-exposure-password-logging-in-authentication)
+- [Path Traversal vulnerability in file handling](https://github.com/fwpt/secure-code-review?tab=readme-ov-file#path-traversal-vulnerability-in-file-handling)
+- [Race Condition (TOCTOU) and CSRF in financial transaction API](https://github.com/fwpt/secure-code-review?tab=readme-ov-file#race-condition-toctou-and-csrf-in-financial-transaction-api)
+- [Command Injection (RCE) and JWT vulnerabilities in Node.js/Express](https://github.com/fwpt/secure-code-review?tab=readme-ov-file#command-injection-rce-and-jwt-vulnerabilities-in-nodejsexpress)
+- [Container security issues (secrets, root user, SSH exposure)](https://github.com/fwpt/secure-code-review?tab=readme-ov-file#container-security-issues-secrets-root-user-ssh-exposure)
 
 There is some repetition and I refer back to previous findings in my feedback, so it's best to read through these from top to bottom for maximum learning.
 
