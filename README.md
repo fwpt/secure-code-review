@@ -99,13 +99,11 @@ end
 
 It is important to think out loud when reviewing this on a call so that the interviewer can understand your thought process.
 
-The method requires auth, `!` means redirects if not logged in so only authenticated users can access it.
-`@query` likely contains untrusted user data from the search parameter, this could be a __source__ (as in a __source__ and a __sink__).
-Line 13: in the `where` statement, string interpolation (concatenation) is used to craft the SQL query; this is not a great practice and parameterised statements should be used normally. In this case, because `query` could contain untrusted data, we're looking at a potential SQL injection vulnerability. Here, untrusted user data gets intepreted as code (SQL, e.g., by providing `query=' OR 1=1 --`). This might allow a malicious actor to manipulate the query and inject arbritrary SQL code, leaking sensitive data, running commands on the database server, or manipulating data affecting the confidentiality, integrity, and availability of the database and thus the service.
-
-If exploitable (e.g., there is no other controls in place such as a WAF or input validation), this would typically be rated a critical severity vulnerability that you want to fix as soon as possible. These issues can be generally easily found by SAST scanners. 
-
-The `current_user.id` in line 13 suffers from a similar problem, but it is likely not under direct control of an attacker. A better pattern is shown in the `else` condition in line 15, where parameters are used with ActiveRecord instead.
+- The method requires auth, `!` means redirects if not logged in so only authenticated users can access it.
+- `@query` likely contains untrusted user data from the search parameter, this could be a __source__ (as in a __source__ and a __sink__).
+- Line 13: in the `where` statement, string interpolation (concatenation) is used to craft the SQL query; this is not a great practice and parameterised statements should be used normally. In this case, because `query` could contain untrusted data, we're looking at a potential SQL injection vulnerability. Here, untrusted user data gets intepreted as code (SQL, e.g., by providing `query=' OR 1=1 --`). This might allow a malicious actor to manipulate the query and inject arbritrary SQL code, leaking sensitive data, running commands on the database server, or manipulating data affecting the confidentiality, integrity, and availability of the database and thus the service.
+- If exploitable (e.g., there is no other controls in place such as a WAF or input validation), this would typically be rated a critical severity vulnerability that you want to fix as soon as possible. These issues can be generally easily found by SAST scanners. 
+- The `current_user.id` in line 13 suffers from a similar problem, but it is likely not under direct control of an attacker. A better pattern is shown in the `else` condition in line 15, where parameters are used with ActiveRecord instead.
 
 ## Broken Access Control (IDOR) in user profile update
 [snippet-2.rb with line numbers](snippet-2.rb)
@@ -131,15 +129,11 @@ class UsersController < ApplicationController
 end
 ```
 
-Again, this requires authentication.
-
-Line 10, user model is retrieved based on potentially untrusted data, `id` parameter. This might be problematic if there's no access checks in place. For an authenticated endpoint, you'd normally retrieve the user id from the trusted context, aka a user token or session.
-
-In line 12 the user gets updated based on `user_params`. It does not look like there are any access checks in place in this endpoint. While there might be an API server or authorization service elsewhere, this is likely a broken access control vulnerability via an indirect object reference (IDOR), via the `id` provided as parameter. This allows a malicious user to update any other user's data if no further controls are in place which could result in account take over and/or alteration of data. This is again critical depending on the user properties that can be updated.
-
-Looking at line 22, it allows for updating the names and `email`. If the `email` is also the username, it can likely be used for account takeover by updating `email` to an email under the attacker's control. After that, log in to the victim's user account via a password reset or passwordless login options - if there are no further protections in place such as "confirm email change" via the old email under the victim's control.
-
-There might also be a vector for stored Cross-Site Scripting (XSS), e.g., storing a malicious payload in the user profile including code that could steal session tokens. The next time a user's details are displayed in the app, the payload might trigger (blind XSS).
+- Again, this requires authentication.
+- Line 10, user model is retrieved based on potentially untrusted data, `id` parameter. This might be problematic if there's no access checks in place. For an authenticated endpoint, you'd normally retrieve the user id from the trusted context, aka a user token or session.
+- In line 12 the user gets updated based on `user_params`. It does not look like there are any access checks in place in this endpoint. While there might be an API server or authorization service elsewhere, this is likely a broken access control vulnerability via an indirect object reference (IDOR), via the `id` provided as parameter. This allows a malicious user to update any other user's data if no further controls are in place which could result in account take over and/or alteration of data. This is again critical depending on the user properties that can be updated.
+- Looking at line 22, it allows for updating the names and `email`. If the `email` is also the username, it can likely be used for account takeover by updating `email` to an email under the attacker's control. After that, log in to the victim's user account via a password reset or passwordless login options - if there are no further protections in place such as "confirm email change" via the old email under the victim's control.
+- There might also be a vector for stored Cross-Site Scripting (XSS), e.g., storing a malicious payload in the user profile including code that could steal session tokens. The next time a user's details are displayed in the app, the payload might trigger (blind XSS).
 
 __(__Note that I skipped explaining potential fixes here to keep the initial response short - in a real interview, a follow up question is expected in such case to explore mitigation strategies.__
 
